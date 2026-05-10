@@ -1,0 +1,123 @@
+/* DASHBOARD PAGE STYLES */
+.dashboard-page {
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-white);
+  padding: var(--spacing-2xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.dashboard-header h1 {
+  font-size: var(--font-size-2xl);
+  margin: 0;
+  flex: 1;
+}
+
+.dashboard-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+}
+
+.dashboard-content {
+  padding: var(--spacing-2xl);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome-section {
+  background-color: var(--color-white);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-md);
+}
+
+.welcome-section h2 {
+  font-size: var(--font-size-xl);
+  color: var(--color-gray-900);
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+}
+
+.welcome-section p {
+  color: var(--color-gray-600);
+  margin: var(--spacing-md) 0;
+}
+
+.welcome-section ul {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-lg) 0;
+}
+
+.welcome-section li {
+  padding: var(--spacing-sm) 0;
+  padding-left: var(--spacing-lg);
+  position: relative;
+  color: var(--color-gray-700);
+}
+
+.welcome-section li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.user-details {
+  margin-top: var(--spacing-2xl);
+  padding-top: var(--spacing-2xl);
+  border-top: 2px solid var(--color-gray-200);
+}
+
+.user-details h3 {
+  font-size: var(--font-size-lg);
+  color: var(--color-gray-900);
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+}
+
+.user-details p {
+  display: flex;
+  gap: var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+  color: var(--color-gray-700);
+}
+
+.user-details strong {
+  color: var(--color-primary);
+  min-width: 120px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    text-align: center;
+  }
+
+  .dashboard-user-info {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dashboard-content {
+    padding: var(--spacing-xl);
+  }
+
+  .welcome-section {
+    padding: var(--spacing-xl);
+  }
+}
