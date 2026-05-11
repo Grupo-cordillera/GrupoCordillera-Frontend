@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { Button } from '../../atoms/Button/Button.jsx'
 import { authService } from '../../../services/authService.js'
+import { useRoles } from '../../../hooks/useRoles.js'
 import '../../../styles/pages/dashboard.css'
 
 const defaultAdminForm = {
@@ -11,7 +12,7 @@ const defaultAdminForm = {
   correo: '',
   direccion: '',
   telefono: '',
-  numero_rol: 2,
+  numero_rol: 0,
   contrasena: '',
 }
 
@@ -45,6 +46,7 @@ const getRoleLabel = (user) => {
 export const DashboardPage = () => {
   const navigate = useNavigate()
   const { user, logout, updateUser, updateToken } = useAuth()
+  const { roles } = useRoles()
   const [activeSection, setActiveSection] = useState('overview')
   const [users, setUsers] = useState([])
   const [adminLoading, setAdminLoading] = useState(false)
@@ -100,6 +102,15 @@ export const DashboardPage = () => {
       contrasena: '',
     })
   }, [activeSection, user])
+
+  useEffect(() => {
+    if (roles.length > 0 && formState.numero_rol === 0) {
+      setFormState((current) => ({
+        ...current,
+        numero_rol: roles[0].numeroRol || roles[0].id,
+      }))
+    }
+  }, [roles, formState.numero_rol])
 
   const resetForm = () => {
     setEditingUserId(null)
@@ -204,6 +215,8 @@ export const DashboardPage = () => {
 
     try {
       if (editingUserId) {
+        const isEditingCurrentUser = editingUserId === user?.id
+        
         await authService.updateUser(editingUserId, {
           nombre: formState.nombre,
           apellido: formState.apellido,
@@ -217,6 +230,34 @@ export const DashboardPage = () => {
           await authService.changeUserPassword(editingUserId, {
             newPassword: formState.contrasena.trim(),
           })
+        }
+
+        // Si el usuario actual fue editado, actualizar sus datos en el contexto
+        if (isEditingCurrentUser) {
+          const updatedUser = await authService.getCurrentUser()
+          const roleLabel = updatedUser.rol?.nombre || updatedUser.rol?.nombre_rol || `Rol ${updatedUser.rol?.numeroRol || updatedUser.rol?.numero_rol}`
+          
+          const oldRole = String(user?.rol).toLowerCase()
+          const newRole = String(roleLabel).toLowerCase()
+          
+          updateUser({
+            id: user?.id,
+            nombre: updatedUser.nombre,
+            apellido: updatedUser.apellido,
+            correo: updatedUser.correo,
+            direccion: updatedUser.direccion,
+            telefono: updatedUser.telefono,
+            rol: roleLabel,
+          })
+
+          // Si el rol cambió, recarga la página para que se refleje en la UI
+          if (oldRole !== newRole) {
+            setAdminMessage('Tu rol ha sido actualizado. Recargando...')
+            setTimeout(() => {
+              window.location.reload()
+            }, 1000)
+            return
+          }
         }
 
         setAdminMessage('Usuario actualizado correctamente.')
@@ -318,11 +359,6 @@ export const DashboardPage = () => {
               Mi Perfil
             </Button>
           </div>
-          <div className="dashboard-user-info">
-            <Button variant="secondary" onClick={handleLogout}>
-              Cerrar Sesión
-            </Button>
-          </div>
         </div>
       </div>
 
@@ -332,109 +368,111 @@ export const DashboardPage = () => {
             variant={activeSection === 'overview' ? 'primary' : 'secondary'}
             onClick={() => setActiveSection('overview')}
           >
-            Inicio
+             Inicio
           </Button>
           {isAdmin && (
             <Button
               variant={activeSection === 'admin' ? 'primary' : 'secondary'}
               onClick={() => setActiveSection('admin')}
             >
-              Administracion
+               Administración
             </Button>
           )}
+          
         </div>
 
-        {activeSection === 'overview' && (
-          <div className="welcome-section">
-            <h2>Resumen de sesión</h2>
-            <p>Acceso validado correctamente. Desde aquí puedes gestionar el sistema según tu rol.</p>
+        <div className="dashboard-panels">
+          {activeSection === 'overview' && (
+            <div className="welcome-section active">
+              <h2>Resumen de sesión</h2>
+              <p>Acceso validado correctamente. Desde aquí puedes gestionar el sistema según tu rol.</p>
 
-            <div className="user-details">
-              <h3>Datos del usuario</h3>
-              <p><strong>Nombre:</strong> {user?.nombre}</p>
-              <p><strong>Correo:</strong> {user?.correo}</p>
-              <p><strong>Telefono:</strong> {user?.telefono}</p>
-              <p><strong>Direccion:</strong> {user?.direccion}</p>
-              <p><strong>Rol:</strong> {user?.rol}</p>
+              <div className="user-details">
+                <h3>Datos del usuario</h3>
+                <p><strong>Nombre:</strong> {user?.nombre}</p>
+                <p><strong>Correo:</strong> {user?.correo}</p>
+                <p><strong>Telefono:</strong> {user?.telefono}</p>
+                <p><strong>Direccion:</strong> {user?.direccion}</p>
+                <p><strong>Rol:</strong> {user?.rol}</p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {activeSection === 'profile' && (
-          <section className="profile-panel">
-            <div className="profile-panel__head">
-              <h2>Editar mi perfil</h2>
-              <p>Actualiza tu información personal y contraseña.</p>
-            </div>
-
-            {profileError && <div className="admin-feedback admin-feedback--error">{profileError}</div>}
-            {profileMessage && <div className="admin-feedback admin-feedback--success">{profileMessage}</div>}
-
-            <form className="admin-form" onSubmit={handleSaveProfile}>
-              <h3>Mis datos</h3>
-              <div className="admin-form__grid">
-                <label>
-                  Nombre
-                  <input
-                    value={profileForm.nombre}
-                    onChange={(event) => handleProfileInputChange('nombre', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Apellido
-                  <input
-                    value={profileForm.apellido}
-                    onChange={(event) => handleProfileInputChange('apellido', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Correo
-                  <input
-                    type="email"
-                    value={profileForm.correo}
-                    onChange={(event) => handleProfileInputChange('correo', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Direccion
-                  <input
-                    value={profileForm.direccion}
-                    onChange={(event) => handleProfileInputChange('direccion', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Telefono
-                  <input
-                    value={profileForm.telefono}
-                    onChange={(event) => handleProfileInputChange('telefono', event.target.value)}
-                    required
-                  />
-                </label>
-                <label className="admin-form__password">
-                  Nueva contraseña (opcional)
-                  <input
-                    type="password"
-                    value={profileForm.contrasena}
-                    onChange={(event) => handleProfileInputChange('contrasena', event.target.value)}
-                  />
-                </label>
+          {activeSection === 'profile' && (
+            <section className="profile-panel active">
+              <div className="profile-panel__head">
+                <h2>Editar mi perfil</h2>
+                <p>Actualiza tu información personal y contraseña.</p>
               </div>
 
-              <div className="admin-form__actions">
-                <Button type="submit" isLoading={profileLoading}>
-                  Guardar cambios
-                </Button>
-              </div>
-            </form>
-          </section>
-        )}
+              {profileError && <div className="admin-feedback admin-feedback--error">{profileError}</div>}
+              {profileMessage && <div className="admin-feedback admin-feedback--success">{profileMessage}</div>}
+
+              <form className="admin-form" onSubmit={handleSaveProfile}>
+                <h3>Mis datos</h3>
+                <div className="admin-form__grid">
+                  <label>
+                    Nombre
+                    <input
+                      value={profileForm.nombre}
+                      onChange={(event) => handleProfileInputChange('nombre', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Apellido
+                    <input
+                      value={profileForm.apellido}
+                      onChange={(event) => handleProfileInputChange('apellido', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Correo
+                    <input
+                      type="email"
+                      value={profileForm.correo}
+                      onChange={(event) => handleProfileInputChange('correo', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Direccion
+                    <input
+                      value={profileForm.direccion}
+                      onChange={(event) => handleProfileInputChange('direccion', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Telefono
+                    <input
+                      value={profileForm.telefono}
+                      onChange={(event) => handleProfileInputChange('telefono', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label className="admin-form__password">
+                    Nueva contraseña (opcional)
+                    <input
+                      type="password"
+                      value={profileForm.contrasena}
+                      onChange={(event) => handleProfileInputChange('contrasena', event.target.value)}
+                    />
+                  </label>
+                </div>
+
+                <div className="admin-form__actions">
+                  <Button type="submit" isLoading={profileLoading}>
+                    Guardar cambios
+                  </Button>
+                </div>
+              </form>
+            </section>
+          )}
 
         {isAdmin && activeSection === 'admin' && (
-          <section className="admin-panel">
+          <section className="admin-panel active">
             <div className="admin-panel__head">
               <div className="admin-panel__head-content">
                 <div>
@@ -458,96 +496,103 @@ export const DashboardPage = () => {
             {adminMessage && <div className="admin-feedback admin-feedback--success">{adminMessage}</div>}
 
             {showAdminForm && (
-            <form className="admin-form" onSubmit={handleSaveUser}>
-              <div className="admin-form__header">
-                <h3>{editingUserId ? 'Editar usuario' : 'Crear usuario'}</h3>
-                <Button 
-                  type="button"
-                  variant="secondary"
-                  size="small"
-                  onClick={() => {
-                    setShowAdminForm(false);
-                    setEditingUserId(null);
-                    setFormState(defaultAdminForm);
-                  }}
-                >
-                  Cerrar
-                </Button>
-              </div>
-              <div className="admin-form__grid">
-                <label>
-                  Nombre
-                  <input
-                    value={formState.nombre}
-                    onChange={(event) => handleInputChange('nombre', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Apellido
-                  <input
-                    value={formState.apellido}
-                    onChange={(event) => handleInputChange('apellido', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Correo
-                  <input
-                    type="email"
-                    value={formState.correo}
-                    onChange={(event) => handleInputChange('correo', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Direccion
-                  <input
-                    value={formState.direccion}
-                    onChange={(event) => handleInputChange('direccion', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Telefono
-                  <input
-                    value={formState.telefono}
-                    onChange={(event) => handleInputChange('telefono', event.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Rol
-                  <select
-                    value={formState.numero_rol}
-                    onChange={(event) => handleInputChange('numero_rol', event.target.value)}
+              <form className="admin-form" onSubmit={handleSaveUser}>
+                <div className="admin-form__header">
+                  <h3>{editingUserId ? 'Editar usuario' : 'Crear usuario'}</h3>
+                  <Button 
+                    type="button"
+                    variant="secondary"
+                    size="small"
+                    onClick={() => {
+                      setShowAdminForm(false);
+                      setEditingUserId(null);
+                      setFormState(defaultAdminForm);
+                    }}
                   >
-                    <option value={1}>Administrador</option>
-                    <option value={2}>Usuario</option>
-                  </select>
-                </label>
-                <label className="admin-form__password">
-                  {editingUserId ? 'Nueva contraseña (opcional)' : 'Contraseña'}
-                  <input
-                    type="password"
-                    value={formState.contrasena}
-                    onChange={(event) => handleInputChange('contrasena', event.target.value)}
-                    required={!editingUserId}
-                  />
-                </label>
-              </div>
-
-              <div className="admin-form__actions">
-                <Button type="submit" isLoading={adminLoading}>
-                  {editingUserId ? 'Guardar cambios' : 'Crear usuario'}
-                </Button>
-                {editingUserId && (
-                  <Button type="button" variant="secondary" onClick={resetForm}>
-                    Cancelar edicion
+                    Cerrar
                   </Button>
-                )}
-              </div>
-            </form>
+                </div>
+                <div className="admin-form__grid">
+                  <label>
+                    Nombre
+                    <input
+                      value={formState.nombre}
+                      onChange={(event) => handleInputChange('nombre', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Apellido
+                    <input
+                      value={formState.apellido}
+                      onChange={(event) => handleInputChange('apellido', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Correo
+                    <input
+                      type="email"
+                      value={formState.correo}
+                      onChange={(event) => handleInputChange('correo', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Direccion
+                    <input
+                      value={formState.direccion}
+                      onChange={(event) => handleInputChange('direccion', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Telefono
+                    <input
+                      value={formState.telefono}
+                      onChange={(event) => handleInputChange('telefono', event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Rol
+                    <select
+                      value={formState.numero_rol}
+                      onChange={(event) => handleInputChange('numero_rol', event.target.value)}
+                    >
+                      {roles.length === 0 ? (
+                        <option value="">Cargando roles...</option>
+                      ) : (
+                        roles.map((role) => (
+                          <option key={role.id} value={role.numeroRol || role.id}>
+                            {role.nombre}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </label>
+                  <label className="admin-form__password">
+                    {editingUserId ? 'Nueva contraseña (opcional)' : 'Contraseña'}
+                    <input
+                      type="password"
+                      value={formState.contrasena}
+                      onChange={(event) => handleInputChange('contrasena', event.target.value)}
+                      required={!editingUserId}
+                    />
+                  </label>
+                </div>
+
+                <div className="admin-form__actions">
+                  <Button type="submit" isLoading={adminLoading}>
+                    {editingUserId ? 'Guardar cambios' : 'Crear usuario'}
+                  </Button>
+                  {editingUserId && (
+                    <Button type="button" variant="secondary" onClick={resetForm}>
+                      Cancelar edicion
+                    </Button>
+                  )}
+                </div>
+              </form>
             )}
 
             <div className="admin-table-wrap">
@@ -590,12 +635,13 @@ export const DashboardPage = () => {
         )}
 
         {!isAdmin && activeSection === 'admin' && (
-          <div className="welcome-section">
+          <div className="welcome-section active">
             <h2>Acceso restringido</h2>
             <p>Solo los administradores pueden acceder a la gestion de usuarios.</p>
           </div>
         )}
       </div>
+    </div>
     </div>
   )
 }

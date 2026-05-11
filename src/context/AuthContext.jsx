@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { setUnauthorizedCallback } from '../services/authService.js'
 
 const AuthContext = createContext(undefined)
 
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback((response) => {
     const userData = {
+      id: response.id,
       nombre: response.nombre,
       correo: response.correo,
       direccion: response.direccion,
@@ -51,6 +53,17 @@ export const AuthProvider = ({ children }) => {
     setToken(newToken)
     localStorage.setItem('authToken', newToken)
   }, [])
+
+  // Registrar callback para auto-logout cuando el token expire
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      logout()
+      alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.')
+      window.location.href = '/login'
+    }
+    
+    setUnauthorizedCallback(handleUnauthorized)
+  }, [logout])
 
   const value = {
     user,

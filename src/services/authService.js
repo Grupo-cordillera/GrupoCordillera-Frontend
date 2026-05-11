@@ -43,6 +43,29 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
+// Callback para manejar logout automático
+let onUnauthorized = null
+
+export const setUnauthorizedCallback = (callback) => {
+  onUnauthorized = callback
+}
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.warn('[authService] Token expirado o no autorizado. Cierre de sesión automático.')
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      
+      if (onUnauthorized) {
+        onUnauthorized()
+      }
+    }
+    return Promise.reject(error)
+  }
+)
+
 export const authService = {
   login: async (credentials) => {
     const response = await apiClient.post('/api/bff/auth/login', credentials)
@@ -104,6 +127,11 @@ export const authService = {
 
   changeCurrentUserPassword: async (data) => {
     await apiClient.patch('/api/bff/auth/me/change-password', data)
+  },
+
+  getRoles: async () => {
+    const response = await apiClient.get('/api/bff/auth/roles')
+    return response.data
   },
 }
 
