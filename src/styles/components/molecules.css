@@ -1,6 +1,7 @@
 /* CARD STYLES */
 .card {
-  background-color: var(--color-white);
+  background-color: var(--color-gray-800);
+  border: 1px solid var(--color-gray-600);
   border-radius: var(--radius-2xl);
   padding: var(--spacing-2xl);
 }

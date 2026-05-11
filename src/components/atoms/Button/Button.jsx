@@ -1,20 +1,13 @@
-import React from 'react';
-import '../../../styles/components/atoms.css';
+import React from 'react'
+import '../../../styles/components/atoms.css'
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger';
-  size?: 'small' | 'medium' | 'large';
-  isLoading?: boolean;
-  fullWidth?: boolean;
-}
-
-export const Button: React.FC<ButtonProps> = ({
+export const Button = ({
   variant = 'primary',
   size = 'medium',
   isLoading = false,
   fullWidth = false,
   children,
-  disabled,
+  disabled = false,
   ...props
 }) => {
   const classes = [
@@ -25,7 +18,7 @@ export const Button: React.FC<ButtonProps> = ({
     (disabled || isLoading) && 'button--disabled',
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <button
@@ -42,5 +35,5 @@ export const Button: React.FC<ButtonProps> = ({
         children
       )}
     </button>
-  );
-};
+  )
+}

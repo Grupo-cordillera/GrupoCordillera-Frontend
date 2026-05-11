@@ -1,12 +1,7 @@
-import React from 'react';
-import '../../../styles/components/atoms.css';
+import React from 'react'
+import '../../../styles/components/atoms.css'
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-}
-
-export const Input: React.FC<InputProps> = ({ label, error, id, ...props }) => {
+export const Input = ({ label, error, id, ...props }) => {
   return (
     <div className="input-wrapper">
       {label && <label htmlFor={id} className="input-label">{label}</label>}
@@ -17,5 +12,5 @@ export const Input: React.FC<InputProps> = ({ label, error, id, ...props }) => {
       />
       {error && <span className="input-error">{error}</span>}
     </div>
-  );
-};
+  )
+}
