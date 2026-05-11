@@ -1,10 +1,10 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
-import { LoginPage } from './components/pages/Login/LoginPage';
-import { DashboardPage } from './components/pages/Dashboard/DashboardPage';
-import './styles/global.css';
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext.jsx'
+import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute.jsx'
+import { LoginPage } from './components/pages/Login/LoginPage.jsx'
+import { DashboardPage } from './components/pages/Dashboard/DashboardPage.jsx'
+import './styles/global.css'
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
         </Routes>
       </AuthProvider>
     </Router>
-  );
+  )
 }
 
-export default App;
+export default App

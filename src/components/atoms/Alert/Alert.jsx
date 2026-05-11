@@ -1,13 +1,7 @@
-import React from 'react';
-import '../../../styles/components/atoms.css';
+import React from 'react'
+import '../../../styles/components/atoms.css'
 
-interface AlertProps {
-  type: 'success' | 'error' | 'warning' | 'info';
-  message: string;
-  onClose?: () => void;
-}
-
-export const Alert: React.FC<AlertProps> = ({ type, message, onClose }) => {
+export const Alert = ({ type, message, onClose }) => {
   return (
     <div className={`alert alert--${type}`}>
       <div className="alert-content">
@@ -23,5 +17,5 @@ export const Alert: React.FC<AlertProps> = ({ type, message, onClose }) => {
         <button className="alert-close" onClick={onClose}>✕</button>
       )}
     </div>
-  );
-};
+  )
+}

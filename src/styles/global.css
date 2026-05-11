@@ -13,8 +13,8 @@ body,
 
 body {
   font-family: var(--font-family);
-  background-color: var(--color-gray-50);
-  color: var(--color-gray-900);
+  background-color: #0b1220;
+  color: var(--color-gray-100);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -25,13 +25,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-primary-light);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 a:hover {
-  color: var(--color-primary-dark);
+  color: var(--color-primary);
 }
 
 /* Scrollbar Styles */
@@ -41,14 +41,14 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-gray-100);
+  background: #111827;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-gray-300);
+  background: #334155;
   border-radius: var(--radius-lg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray-400);
+  background: #475569;
 }

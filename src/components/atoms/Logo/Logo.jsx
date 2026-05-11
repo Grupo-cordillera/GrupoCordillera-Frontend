@@ -1,11 +1,7 @@
-import React from 'react';
-import '../../../styles/components/atoms.css';
+import React from 'react'
+import '../../../styles/components/atoms.css'
 
-interface LogoProps {
-  size?: 'small' | 'medium' | 'large';
-}
-
-export const Logo: React.FC<LogoProps> = ({ size = 'medium' }) => {
+export const Logo = ({ size = 'medium' }) => {
   return (
     <div className={`logo logo--${size}`}>
       <div className="logo-icon">
@@ -20,5 +16,5 @@ export const Logo: React.FC<LogoProps> = ({ size = 'medium' }) => {
       </div>
       <span className="logo-text">GrupoCordillera</span>
     </div>
-  );
-};
+  )
+}
