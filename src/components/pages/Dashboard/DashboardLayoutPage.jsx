@@ -53,6 +53,18 @@ export const DashboardLayoutPage = () => {
             >
               Inicio
             </Button>
+            <Button
+              variant={location.pathname.includes('/inventario') ? 'primary' : 'secondary'}
+              onClick={() => navigate('/dashboard/inventario')}
+            >
+              Inventario
+            </Button>
+            <Button
+              variant={location.pathname.includes('/metricas') ? 'primary' : 'secondary'}
+              onClick={() => navigate('/dashboard/metricas')}
+            >
+              Metricas
+            </Button>
             {isAdmin && (
               <Button
                 variant={location.pathname.includes('/admin') ? 'primary' : 'secondary'}

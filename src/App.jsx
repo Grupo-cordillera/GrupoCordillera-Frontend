@@ -7,6 +7,8 @@ import { DashboardLayoutPage } from './components/pages/Dashboard/DashboardLayou
 import { DashboardHomePage } from './components/pages/Dashboard/DashboardHomePage.jsx'
 import { DashboardProfilePage } from './components/pages/Dashboard/DashboardProfilePage.jsx'
 import { DashboardAdminPage } from './components/pages/Dashboard/DashboardAdminPage.jsx'
+import { DashboardInventoryPage } from './components/pages/Dashboard/DashboardInventoryPage.jsx'
+import { DashboardMetricsPage } from './components/pages/Dashboard/DashboardMetricsPage.jsx'
 import './styles/global.css'
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
             }
           >
             <Route index element={<DashboardHomePage />} />
+            <Route path="inventario" element={<DashboardInventoryPage />} />
+            <Route path="metricas" element={<DashboardMetricsPage />} />
             <Route path="profile" element={<DashboardProfilePage />} />
             <Route path="admin" element={<DashboardAdminPage />} />
           </Route>
