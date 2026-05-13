@@ -16,17 +16,21 @@ const defaultAdminForm = {
 }
 
 const getRoleNumber = (user) => {
-  if (typeof user.rol.numero_rol === 'number') return user.rol.numero_rol
-  if (typeof user.rol.numeroRol === 'number') return user.rol.numeroRol
+  if (typeof user.rol === 'object' && user.rol !== null) {
+    if (typeof user.rol.numeroRol === 'number') return user.rol.numeroRol
+    if (typeof user.rol.numero_rol === 'number') return user.rol.numero_rol
+  }
   return 2
 }
 
 const getRoleLabel = (user) => {
-  if (typeof user.rol.nombre_rol === 'string' && user.rol.nombre_rol.trim()) {
-    return user.rol.nombre_rol
-  }
-  if (typeof user.rol.nombre === 'string' && user.rol.nombre.trim()) {
-    return user.rol.nombre
+  if (typeof user.rol === 'object' && user.rol !== null) {
+    if (typeof user.rol.nombre === 'string' && user.rol.nombre.trim()) {
+      return user.rol.nombre
+    }
+    if (typeof user.rol.nombre_rol === 'string' && user.rol.nombre_rol.trim()) {
+      return user.rol.nombre_rol
+    }
   }
 
   const roleNumber = getRoleNumber(user)

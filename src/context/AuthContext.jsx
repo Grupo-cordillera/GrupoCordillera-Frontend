@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
     const userData = {
       id: response.id,
       nombre: response.nombre,
+      apellido: response.apellido,
       correo: response.correo,
       direccion: response.direccion,
       telefono: response.telefono,

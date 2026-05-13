@@ -158,19 +158,19 @@ describe('authService', () => {
     await authService.updateUser(1, { nombre: 'Ana' })
 
     localStorage.setItem('authToken', 'short-token')
-    await authService.updateCurrentUser({ nombre: 'Ana' })
+    await authService.updateCurrentUser(5, { nombre: 'Ana' })
 
     localStorage.setItem('authToken', 'token-with-long-length-123456789')
     await authService.updateUser(2, { nombre: 'Luis' })
 
     await authService.changeUserPassword(2, { newPassword: '123' })
-    await authService.changeCurrentUserPassword({ newPassword: '123' })
+    await authService.changeCurrentUserPassword(5, { newPassword: '123' })
     await authService.deleteUser(2)
 
     expect(apiClient.put).toHaveBeenCalledWith('/api/bff/auth/usuarios/1', {
       nombre: 'Ana',
     })
-    expect(apiClient.put).toHaveBeenCalledWith('/api/bff/auth/me', { nombre: 'Ana' })
+    expect(apiClient.put).toHaveBeenCalledWith('/api/bff/auth/usuarios/5', { nombre: 'Ana' })
     expect(apiClient.delete).toHaveBeenCalledWith('/api/bff/auth/usuarios/2')
 
     groupSpy.mockRestore()
