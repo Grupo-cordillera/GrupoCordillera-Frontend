@@ -108,25 +108,34 @@ export const authService = {
     await apiClient.delete(`/api/bff/auth/usuarios/${id}`)
   },
 
-  getCurrentUser: async () => {
-    const response = await apiClient.get('/api/bff/auth/me')
+  getCurrentUser: async (id) => {
+    const response = await apiClient.get(`/api/bff/auth/usuarios/${id}`)
     return response.data
   },
 
-  updateCurrentUser: async (data) => {
+  updateCurrentUser: async (userId, data) => {
     const token = localStorage.getItem('authToken')
+    const endpoint = `/api/bff/auth/usuarios/${userId}`
+
     console.group('[authService.updateCurrentUser] Request debug')
-    console.log('Endpoint: PUT /api/bff/auth/me')
+    console.log('Endpoint:', `${API_BASE_URL}${endpoint}`)
     console.log('Payload JSON:', JSON.stringify(data, null, 2))
     console.log('Token presente:', Boolean(token))
     console.log('Token (enmascarado):', maskToken(token))
     console.groupEnd()
 
-    await apiClient.put('/api/bff/auth/me', data)
+    await apiClient.put(endpoint, data)
   },
 
-  changeCurrentUserPassword: async (data) => {
-    await apiClient.patch('/api/bff/auth/me/change-password', data)
+  changeCurrentUserPassword: async (userId, data) => {
+    const endpoint = `/api/bff/auth/usuarios/${userId}/change-password`
+
+    console.group('[authService.changeCurrentUserPassword] Request debug')
+    console.log('Endpoint:', `${API_BASE_URL}${endpoint}`)
+    console.log('Payload JSON:', JSON.stringify(data, null, 2))
+    console.groupEnd()
+
+    await apiClient.patch(endpoint, data)
   },
 
   getRoles: async () => {

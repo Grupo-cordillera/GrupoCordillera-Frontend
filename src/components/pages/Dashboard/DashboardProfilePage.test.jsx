@@ -37,12 +37,13 @@ describe('DashboardProfilePage', () => {
     const updateUser = vi.fn()
     mockUseAuth.mockReturnValue({
       user: {
+        id: 5,
         nombre: 'Ana',
         apellido: 'Lopez',
         correo: 'ana@demo.com',
         direccion: 'Old',
         telefono: '123',
-        rol: 'Admin',
+        rol: { id: 1, numeroRol: 1, nombre: 'ADMIN', funcion: 'Administrador' },
       },
       logout: vi.fn(),
       updateUser,
@@ -61,7 +62,7 @@ describe('DashboardProfilePage', () => {
     fireEvent.click(screen.getByRole('button', { name: /guardar cambios/i }))
 
     await waitFor(() =>
-      expect(mockUpdateCurrentUser).toHaveBeenCalledWith({
+      expect(mockUpdateCurrentUser).toHaveBeenCalledWith(5, {
         nombre: 'Ana',
         apellido: 'Lopez',
         correo: 'ana@demo.com',
@@ -72,12 +73,13 @@ describe('DashboardProfilePage', () => {
 
     expect(mockChangePassword).not.toHaveBeenCalled()
     expect(updateUser).toHaveBeenCalledWith({
+      id: 5,
       nombre: 'Ana',
       apellido: 'Lopez',
       correo: 'ana@demo.com',
       direccion: 'New St',
       telefono: '123',
-      rol: 'Admin',
+      rol: { id: 1, numeroRol: 1, nombre: 'ADMIN', funcion: 'Administrador' },
     })
     expect(screen.getByText(/perfil actualizado correctamente/i)).toBeInTheDocument()
   })
@@ -88,12 +90,13 @@ describe('DashboardProfilePage', () => {
 
     mockUseAuth.mockReturnValue({
       user: {
+        id: 5,
         nombre: 'Ana',
         apellido: 'Lopez',
         correo: 'ana@demo.com',
         direccion: 'Old',
         telefono: '123',
-        rol: 'Admin',
+        rol: { id: 1, numeroRol: 1, nombre: 'ADMIN', funcion: 'Administrador' },
       },
       logout,
       updateUser,
@@ -123,12 +126,13 @@ describe('DashboardProfilePage', () => {
     const updateUser = vi.fn()
     mockUseAuth.mockReturnValue({
       user: {
+        id: 5,
         nombre: 'Ana',
         apellido: 'Lopez',
         correo: 'ana@demo.com',
         direccion: 'Old',
         telefono: '123',
-        rol: 'Admin',
+        rol: { id: 1, numeroRol: 1, nombre: 'ADMIN', funcion: 'Administrador' },
       },
       logout: vi.fn(),
       updateUser,
@@ -145,7 +149,7 @@ describe('DashboardProfilePage', () => {
     fireEvent.click(screen.getByRole('button', { name: /guardar cambios/i }))
 
     await waitFor(() =>
-      expect(mockChangePassword).toHaveBeenCalledWith({ newPassword: 'secret123' })
+      expect(mockChangePassword).toHaveBeenCalledWith(5, { newPassword: 'secret123' })
     )
 
     expect(screen.getByText(/perfil actualizado correctamente/i)).toBeInTheDocument()

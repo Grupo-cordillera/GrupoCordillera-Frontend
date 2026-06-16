@@ -49,7 +49,7 @@ export const DashboardProfilePage = () => {
     try {
       const correoChanged = profileForm.correo !== user.correo
 
-      await authService.updateCurrentUser({
+      await authService.updateCurrentUser(user.id, {
         nombre: profileForm.nombre,
         apellido: profileForm.apellido,
         correo: profileForm.correo,
@@ -58,13 +58,14 @@ export const DashboardProfilePage = () => {
       })
 
       if (profileForm.contrasena.trim()) {
-        await authService.changeCurrentUserPassword({
+        await authService.changeCurrentUserPassword(user.id, {
           newPassword: profileForm.contrasena.trim(),
         })
       }
 
       // Actualizar datos del usuario en contexto
       updateUser({
+        id: user.id,
         nombre: profileForm.nombre,
         apellido: profileForm.apellido,
         correo: profileForm.correo,
